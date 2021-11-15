@@ -60,4 +60,6 @@ const extractDeal = selector => {
     return { title, releaseDate, originalPrice, discountedPrice, link };
 }
 
-module.exports = scrapSteam;
+module.exports = {
+    scrapSteam
+};
