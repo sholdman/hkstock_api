@@ -7,6 +7,7 @@ router.get('/', function (req, res, next) {
     //   res.render('index', { title: 'Express' });
     const start = async function () {
         const result = await scrapSteam();
+        console.log("result: " + result);
         res.send(result);
     }
     start();
