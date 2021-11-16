@@ -38,7 +38,7 @@ const multipleQuote = async (stockCode) => {
     const quote2 = extractQuote(searchResults);
     var data = [];
     data.push(quote);
-    data.push(quote2)
+    data.push(quote2);
     return data;
 }
 
