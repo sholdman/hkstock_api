@@ -17,13 +17,13 @@ var router = express.Router();
 router.get('/quote', async function (req, res) {
     // console.log('req code: ' + req.body.code);
     console.log('req stockcode: ' + req.query.code);
-    code = req.query.code.split(",");
+    codeList = req.query.code.split(",");
     var result;
-    if (req.query.code && code.length == 1) { // check if stockcode is empty
-        result = await etnet.singleQuote(code[0]);
+    if (req.query.code && codeList.length == 1) { // check if stockcode is empty
+        result = await etnet.singleQuote(codeList[0]);
     } else {
         result = {"TODO": "TODO"};
-        result = await etnet.multipleQuote(code[0]);
+        result = await etnet.multipleQuote(codeList);
     }
     res.json(result);
 });

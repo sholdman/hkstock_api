@@ -27,19 +27,16 @@ const singleQuote = async (stockCode) => {
     return quote;
 }
 
-const multipleQuote = async (stockCode) => {
-    const etnetUrl = "http://www.etnet.com.hk/www/tc/stocks/realtime/quote.php?code=" + stockCode;
-    const html = await fetchHtml(etnetUrl);
-    const selector = cheerio.load(html);
+const multipleQuote = async (codeList) => {
+    console.log('codeList: ' + codeList);
+    var quotes = [];
+    for (const code of codeList ) {
+        console.log('stockCode: ' + code);
+        var quote = await singleQuote(code);
+        quotes.push(quote);
+    }
 
-    console.log("etnetUrl: " + etnetUrl);
-    const searchResults = selector("body").find("#UnderSkinnerDiv");
-    const quote = extractQuote(searchResults);
-    const quote2 = extractQuote(searchResults);
-    var data = [];
-    data.push(quote);
-    data.push(quote2);
-    return data;
+    return quotes;
 }
 
 const extractQuote = selector => {
