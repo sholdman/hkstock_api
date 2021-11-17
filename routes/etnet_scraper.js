@@ -27,9 +27,15 @@ const singleQuote = async (stockCode) => {
     const searchResults = selector("body").find("#UnderSkinnerDiv");
     var quote = extractQuote(searchResults);
 
+    // for stock detail
+    const stockDetailSelector = selector("body").find("div #StkDetailColB > #StkList");
+    var stockDetail = getStockDetail(stockDetailSelector);
+
     // for related stockcode
     const relatedStockCodeSelector = selector("body").find("div #DivContentRight > div:eq(8)");
     var relatedStockCode = getRelatedStockCode(relatedStockCodeSelector);
+
+    quote = Object.assign({}, quote, stockDetail);
 
     // TODO: formatter class
     quote["relatedStockCode"] = relatedStockCode;
@@ -91,6 +97,34 @@ const getRelatedStockCode = selector => {
     console.log('relatedStockcode: ' + relatedStockCode);
     console.log('rowCount: ' + rowCount);
     return relatedStockCode;
+}
+
+const getStockDetail = selector => {
+    console.log("getStockDetail...");
+    const bid = selector.find("li:eq(1)").text().trim();
+    const sma10 = selector.find("li:eq(3)").text().trim();
+    const ask = selector.find("li:eq(5)").text().trim();
+    const sma20 = selector.find("li:eq(7)").text().trim();
+    const noOfTransaction = selector.find("li:eq(9)").text().trim();
+    const sma50 = selector.find("li:eq(11)").text().trim();
+    // TODO: 每宗成交金額
+    const sma100 = selector.find("li:eq(15)").text().trim();
+    // TODO: 加權平均價
+    const sma250 = selector.find("li:eq(19)").text().trim();
+    const ccy = selector.find("li:eq(21)").text().trim();
+    const high52w = selector.find("li:eq(23)").text().trim();
+    const boardLot = selector.find("li:eq(25)").text().trim();
+    const low52w = selector.find("li:eq(27)").text().trim();
+    const entryFee = selector.find("li:eq(29)").text().trim();
+    const rsi14 = selector.find("li:eq(31)").text().trim();
+    const bidAskSpread = selector.find("li:eq(33)").text().trim();
+    const tenDayReturn = selector.find("li:eq(35)").text().trim();
+    const pe = selector.find("li:eq(37)").text().trim();
+    const yield = selector.find("li:eq(41)").text().trim();
+    const earningPerShare = selector.find("li:eq(45)").text().trim();
+
+    return { bid, ask, sma10, sma20, sma50, sma100, sma250, noOfTransaction, ccy, high52w, low52w,
+             boardLot, entryFee, rsi14, bidAskSpread, tenDayReturn, pe, yield, earningPerShare};
 }
 
 module.exports = {
