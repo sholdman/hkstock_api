@@ -21,8 +21,18 @@ const singleQuote = async (stockCode) => {
     const selector = cheerio.load(html);
 
     console.log("etnetUrl: " + etnetUrl);
+
+
+    // for common class
     const searchResults = selector("body").find("#UnderSkinnerDiv");
-    const quote = extractQuote(searchResults);
+    var quote = extractQuote(searchResults);
+
+    // for related stockcode
+    const relatedStockCodeSelector = selector("body").find("div #DivContentRight > div:eq(8)");
+    var relatedStockCode = getRelatedStockCode(relatedStockCodeSelector);
+
+    // TODO: formatter class
+    quote["relatedStockCode"] = relatedStockCode;
 
     return quote;
 }
@@ -40,7 +50,6 @@ const multipleQuote = async (codeList) => {
 }
 
 const extractQuote = selector => {
-    console.log("test....");
     const code = selector.find("#StkQuoteHeader").text().trim().split(' ')[0];
     const tcName = selector.find("#StkQuoteHeader").text().trim().split(' ')[1];
     const nominal = selector.find("#StkDetailMainBox").find(".Price").text().trim();
@@ -61,6 +70,27 @@ const extractQuote = selector => {
 
     console.log("nominal: " + nominal + ", change: " + change + ", high: " + high);
     return { code, tcName, nominal, change, changePct, high, low, transaction, turnover, prevClose, open, oneMonthHigh, oneMonthLow, marketCap, shortSell };
+}
+
+const getRelatedStockCode = selector => {
+    console.log("getRelatedStockCode...");
+    var relatedStockCode = [];
+    // remove useless tr row
+    var rowCount = selector.find("tr").length - 2;
+    // one row have two related stock code
+    for (i = 0; i < rowCount; i++) {
+        for (j = -2; j < 2; j++) {
+            if (j % 2 == 0) {
+                var code = selector.find("tr:eq(" + i +") a:eq(" + (j + 2) + ")").text().trim();
+                if (code != null && code != "") {
+                    relatedStockCode.push(code);
+                }
+            }   
+        }
+    }
+    console.log('relatedStockcode: ' + relatedStockCode);
+    console.log('rowCount: ' + rowCount);
+    return relatedStockCode;
 }
 
 module.exports = {
