@@ -75,7 +75,6 @@ const extractQuote = selector => {
 }
 
 const getRelatedStockCode = selector => {
-    console.log("getRelatedStockCode...");
     var relatedStockCode = [];
     // remove useless tr row
     var rowCount = selector.find("tr").length - 2;
@@ -90,8 +89,7 @@ const getRelatedStockCode = selector => {
             }   
         }
     }
-    console.log('relatedStockcode: ' + relatedStockCode);
-    console.log('rowCount: ' + rowCount);
+
     return relatedStockCode;
 }
 
@@ -123,12 +121,12 @@ const getStockDetail = selector => {
              boardLot, entryFee, rsi14, bidAskSpread, tenDayReturn, pe, yield, earningPerShare};
 }
 
-const extractTop20 = (selector, version) => {
+const extractTop20 = async (selector, version) => {
     console.log("extract top 20 content, type: " + version);
     var quotes = [];
+    var rowCount = 20;
 
     if (version == 'basic') {
-        var rowCount = 20;
         for (i = 1; i <= rowCount; i++) {
             var code = selector.find("tr:eq(" + i + ") td:eq(1)").text().trim();
             var tcName = selector.find("tr:eq(" + i + ") td:eq(2)").text().trim();
@@ -143,10 +141,17 @@ const extractTop20 = (selector, version) => {
             var quote = { code, tcName, nominal, change, changePct, high, low, turnover, ccy };
             quotes.push(quote);
         }
-    } else {
+    } else if (version == 'full') {
+        console.log('version -> detail');
         // TODO: detail version
+        var codeList = [];
+        for (i = 1; i <= rowCount; i++) {
+            codeList.push(selector.find("tr:eq(" + i + ") td:eq(1)").text().trim());
+        }
+        quotes = await multipleQuote(codeList);
+    } else {
+        quotes.push({"errReason" : "invalid version"})
     }
-    
     return quotes;
 }
 
