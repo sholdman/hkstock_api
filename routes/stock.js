@@ -1,5 +1,6 @@
 var express = require('express');
 const quote = require('./quote');
+const news = require('./news');
 var router = express.Router();
 
 router.get('/quote', async function (req, res) {
@@ -27,14 +28,20 @@ router.get('/top20', async function (req, res) {
 // param 1. lang, 2. code
 // http://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_list.php?section=related&code=700
 // news api
+router.get('/news', async function (req, res) {
+    console.log('stockcode: ' + req.query.code);
+    let code = req.query.code;
+    var result = await news.relatedCodeNewsList(code);
+    res.json(result);
+});
 
 // local or world indices api
-router.get('/test', function (req, res) {
-    // console.log('type: ' + req.query.type);
-    // type = req.query.type;
-    // version = req.query.version ? req.query.version : 'basic';
-    // var result = quote.top20QuoteTest(type, version);
-    // res.json(result);
+router.get('/test', async function (req, res) {
+    console.log('code: ' + req.query.code);
+    var code = req.query.code
+    var total = await news.getTotalRelatedNewsPage(code);
+    console.log("total: " + total);
+    res.json('total: ' + total);
 });
 
 

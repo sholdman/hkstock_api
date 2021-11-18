@@ -16,7 +16,7 @@ const fetchHtml = async url => {
 }
 
 const scrapEtnetQuotePage = async (stockCode) => {
-    const etnetUrl = "http://www.etnet.com.hk/www/tc/stocks/realtime/quote.php?code=" + stockCode;
+    const etnetUrl = 'http://www.etnet.com.hk/www/tc/stocks/realtime/quote.php?code=' + stockCode;
     const html = await fetchHtml(etnetUrl);
     const selector = cheerio.load(html);
     console.log("scrapEtnet, etnetUrl: " + etnetUrl);
@@ -30,26 +30,37 @@ const scrapEtnetTop20 = async (mainType, subType) => {
     switch (mainType) {
         case "stock":
             console.log('mainType Stock...');
-            etnetUrl = "http://www.etnet.com.hk/www/tc/stocks/realtime/top20.php?subtype=" + subType;
+            etnetUrl = 'http://www.etnet.com.hk/www/tc/stocks/realtime/top20.php?subtype=' + subType;
             break;
         case "war":
             console.log('mainType warrant...');
-            etnetUrl = "http://www.etnet.com.hk/www/tc/warrants/realtime/top20.php?maintype=war&subtype=" + subType;
+            etnetUrl = 'http://www.etnet.com.hk/www/tc/warrants/realtime/top20.php?maintype=war&subtype=' + subType;
             break;
         case "cbbc":
             console.log('mainType CBBC...');
-            etnetUrl = "http://www.etnet.com.hk/www/tc/warrants/realtime/top20.php?maintype=cbbc&subtype=" + subType;
+            etnetUrl = 'http://www.etnet.com.hk/www/tc/warrants/realtime/top20.php?maintype=cbbc&subtype=' + subType;
     }
 
-    // http://www.etnet.com.hk/www/tc/warrants/realtime/top20.php?maintype=war&subtype=turnover
-    // http://www.etnet.com.hk/www/tc/warrants/realtime/top20.php?maintype=cbbc&subtype=turnover
     const html = await fetchHtml(etnetUrl);
     const selector = cheerio.load(html);
     console.log("top20 url: " + etnetUrl);
     return selector;
 }
 
+const scrapEtnetRelatedStockcodeNews = async (stockCode, page) => {
+    let etnetNewsUrl = 'http://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_list.php?section=related&code=' + stockCode;
+    if (page > 0) {
+        etnetNewsUrl = etnetNewsUrl + "&page=" + page;
+    }
+
+    const html = await fetchHtml(etnetNewsUrl);
+    const selector = cheerio.load(html);
+    console.log("related news url: " + etnetNewsUrl);
+    return selector;
+}
+
 module.exports = {
     scrapEtnetQuotePage,
-    scrapEtnetTop20
+    scrapEtnetTop20,
+    scrapEtnetRelatedStockcodeNews
 };
