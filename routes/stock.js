@@ -4,8 +4,8 @@ const news = require('./news');
 var router = express.Router();
 
 // quote api (single/multiple)
-// eg. http://127.0.0.1:3000/stock/quote?code=5
-// eg. http://127.0.0.1:3000/stock/quote?code=5,11,700
+// eg. http://127.0.0.1:3000/stock/quote?code={code}
+// eg. http://127.0.0.1:3000/stock/quote?code={code,code,code}
 router.get('/quote', async function (req, res) {
     console.log('req stockcode: ' + req.query.code);
     codeList = req.query.code.split(",");
@@ -20,7 +20,7 @@ router.get('/quote', async function (req, res) {
 });
 
 // top20 api
-// eg. http://127.0.0.1:3000/stock/top20?mainType=stock&subType=turnover&version=basic
+// eg. http://127.0.0.1:3000/stock/top20?mainType={stock|war|cbbc}&subType={turnover|up|down|volume}&version={basic|full}
 router.get('/top20', async function (req, res) {
     console.log('mainType: ' + req.query.mainType + ", subType: " + req.query.subType);
     mainType = req.query.mainType;
@@ -32,7 +32,7 @@ router.get('/top20', async function (req, res) {
 
 // param 1. lang, 2. code
 // http://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_list.php?section=related&code=700
-// eg. http://127.0.0.1:3000/stock/news?code=5
+// eg. http://127.0.0.1:3000/stock/news?code={code}
 router.get('/news', async function (req, res) {
     console.log('stockcode: ' + req.query.code);
     let code = req.query.code;
@@ -41,7 +41,7 @@ router.get('/news', async function (req, res) {
 });
 
 // news content api
-// http://127.0.0.1:3000/stock/news_content?newsId=ETN311116558
+// http://127.0.0.1:3000/stock/news_content?newsId={newsId}
 router.get('/news_content', async function(req, res) {
     let newsId = req.query.newsId;
     var result = await news.getNewsContent(newsId);
