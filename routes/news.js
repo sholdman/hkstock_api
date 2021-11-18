@@ -30,9 +30,9 @@ const relatedCodeNewsList = async (stockCode) => {
                             .replace('quote_news_detail.php?newsid=','');
                 newsId = newsId.substring(0, newsId.indexOf('&'));
             let headline = selector("body").find("#DivContent").find("div .DivArticleBox")
-                            .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").html();
+                            .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").text().trim();
             let timestamp = selector("body").find("#DivContent").find("div .DivArticleBox")
-                            .find(".DivArticleList.dotLine:eq(" + i + ")").find(".date").html();
+                            .find(".DivArticleList.dotLine:eq(" + i + ")").find(".date").text().trim();
             if (newsId && headline && timestamp) {
                 result.push({ newsId, headline, timestamp });
             }
@@ -49,7 +49,24 @@ const relatedCodeNewsList = async (stockCode) => {
     return news;
 }
 
+const getNewsContent = async (newsId) => {
+    var news = {};
+
+    var selector = await etnet_scraper.scraptEtnetNewsContent(newsId);
+    let headline = selector("body").find("#DivContent").find("div .DivArticleBox > .DivArticleList > .ArticleHdr").text().trim();
+    let content = selector("body").find("#DivContent").find("div .DivArticleBox > .DivArticleContent > #NewsContent").text().trim();
+    let timestamp = selector("body").find("#DivContent").find("div .DivArticleBox > .DivArticleList > .date").text().trim();
+
+    news["newsId"] = newsId;
+    news["headline"] = headline;
+    news["content"] = content;
+    news["timestamp"] = moment(new Date()).format('yyyyMMDDHHmm');
+    
+    return news;
+}
+
 module.exports = {
     relatedCodeNewsList,
-    getTotalRelatedNewsPage
+    getTotalRelatedNewsPage,
+    getNewsContent
 }

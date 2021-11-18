@@ -59,8 +59,18 @@ const scrapEtnetRelatedStockcodeNews = async (stockCode, page) => {
     return selector;
 }
 
+const scraptEtnetNewsContent = async (newsId) => {
+    let etnetNewsUrl = 'https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=' + newsId + '&code=' + 1;
+
+    const html = await fetchHtml(etnetNewsUrl);
+    const selector = cheerio.load(html);
+    console.log("news content url: " + etnetNewsUrl);
+    return selector;
+}
+
 module.exports = {
     scrapEtnetQuotePage,
     scrapEtnetTop20,
-    scrapEtnetRelatedStockcodeNews
+    scrapEtnetRelatedStockcodeNews,
+    scraptEtnetNewsContent
 };
