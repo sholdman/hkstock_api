@@ -1,4 +1,5 @@
 var etnet_scraper = require('./etnet_scraper');
+var moment = require('moment');
 
 const singleQuote = async (stockCode) => {
     // const etnetUrl = "http://www.etnet.com.hk/www/tc/stocks/realtime/quote.php?code=" + stockCode;
@@ -122,10 +123,12 @@ const getStockDetail = selector => {
 
 const extractTop20 = async (selector, version) => {
     console.log("extract top 20 content, type: " + version);
-    var quotes = [];
+    var top20 = {};
     var rowCount = 20;
+    const timestamp = moment(new Date()).format('DD/MM/YYYY hh:mm');
 
     if (version == 'basic') {
+        var data = [];
         for (i = 1; i <= rowCount; i++) {
             var code = selector.find("tr:eq(" + i + ") td:eq(1)").text().trim();
             var tcName = selector.find("tr:eq(" + i + ") td:eq(2)").text().trim();
@@ -138,20 +141,26 @@ const extractTop20 = async (selector, version) => {
             var ccy = selector.find("tr:eq(" + i + ") td:eq(10)").text().trim();
 
             var quote = { code, tcName, nominal, change, changePct, high, low, turnover, ccy };
-            quotes.push(quote);
+            // quotes.push(quote);
+            data.push(quote);
         }
+
     } else if (version == 'full') {
         console.log('version -> detail');
-        // TODO: detail version
+        // TODO: formatting problem
         var codeList = [];
         for (i = 1; i <= rowCount; i++) {
             codeList.push(selector.find("tr:eq(" + i + ") td:eq(1)").text().trim());
         }
-        quotes = await multipleQuote(codeList);
+        top20 = await multipleQuote(codeList);
     } else {
-        quotes.push({"errReason" : "invalid version"})
+        top20["errReason"] = "invalid version";
     }
-    return quotes;
+
+    top20["timestamp"] = timestamp;
+    top20["data"] = data;
+
+    return top20;
 }
 
 module.exports = {
