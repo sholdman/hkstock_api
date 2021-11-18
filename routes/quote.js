@@ -40,9 +40,8 @@ const multipleQuote = async (codeList) => {
     return quotes;
 }
 
-const top20Quote = async (type, version) => {
-    console.log('type: ' + type);
-    var selector = await etnet_scraper.scrapEtnetTop20(type);
+const top20Quote = async (mainType, subType, version) => {
+    var selector = await etnet_scraper.scrapEtnetTop20(mainType, subType);
 
     // for common class
     const top20Content = selector("body").find("div #DivContent").find(".DivFigureContent");
