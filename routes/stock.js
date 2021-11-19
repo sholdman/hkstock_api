@@ -7,7 +7,6 @@ var router = express.Router();
 // eg. http://127.0.0.1:3000/stock/quote?code={code}
 // eg. http://127.0.0.1:3000/stock/quote?code={code,code,code}
 router.get('/quote', async function (req, res) {
-    console.log('req stockcode: ' + req.query.code);
     codeList = req.query.code.split(",");
     var result;
     if (req.query.code && codeList.length == 1) { // check if stockcode is empty
@@ -31,6 +30,7 @@ router.get('/top20', async function (req, res) {
 });
 
 // local indices api
+// eg. http://127.0.0.1:3000/stock/local_indices
 router.get('/local_indices', async function (req, res) {
     var result = await quote.getLocalIndices();
     res.json(result);

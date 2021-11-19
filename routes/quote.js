@@ -111,7 +111,6 @@ const extractQuote = selector => {
     const shortSell = selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(4)").find(".date").text().trim() +
         selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(4)").find(".Number").text().trim();
 
-    console.log("nominal: " + nominal + ", change: " + change + ", high: " + high);
     return { code, tcName, nominal, change, changePct, high, low, transaction, turnover, prevClose, open, oneMonthHigh, oneMonthLow, marketCap, shortSell };
 }
 
