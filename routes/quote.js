@@ -32,7 +32,7 @@ const singleQuote = async (stockCode) => {
 const multipleQuote = async (codeList) => {
     console.log('codeList: ' + codeList);
     var quotes = [];
-    for (const code of codeList ) {
+    for (const code of codeList) {
         console.log('stockCode: ' + code);
         var quote = await singleQuote(code);
         quotes.push(quote);
@@ -51,6 +51,47 @@ const top20Quote = async (mainType, subType, version) => {
     return quotes;
 }
 
+const getLocalIndices = async () => {
+    var indices = {};
+    var selector = await etnet_scraper.scrapEtnetLocalIndices();
+    var indicesContent = selector("body").find(".DivFigureContent").find("tbody");
+    var data = extractLocalIndices(indicesContent);
+
+    indices["data"] = data;
+    indices["timestamp"] = moment(new Date()).format('yyyyMMDDHHmm');
+
+    return indices;
+}
+
+const extractLocalIndices = selector => {
+    var data = [];
+    // positon from frontend page
+    // TODO: set by config
+    var indexPosition = [3,4,5,6,7,8,9];
+
+    for (i = 0; i < indexPosition.length; i++) {
+
+        const nametc = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(0)").text().trim();
+        const nominal = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(1)").text().trim();
+        const change = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(2)").text().trim();
+        const changePct = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(3)").text().trim();
+        const open = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(5)").text().trim();
+        const high = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(6)").text().trim();
+        const low = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(7)").text().trim();
+        // indexconstituents: index constituents array with stock code
+        data.push({ nametc, nominal, change, changePct, open, high, low });
+
+        // if content stockRatio column, rebuild index position arraylist
+        if (selector.find("tr:eq(" + indexPosition[i] + ")").find("table").find(".ADUIBarup") != null) {
+            for (j = i; j < indexPosition.length; j++) {
+                indexPosition[j] = indexPosition[j] + 1;
+            }
+            // console.log('new index list: ' + indexPosition);
+        }
+    }
+    return data;
+}
+
 const extractQuote = selector => {
     const code = selector.find("#StkQuoteHeader").text().trim().split(' ')[0];
     const tcName = selector.find("#StkQuoteHeader").text().trim().split(' ')[1];
@@ -67,8 +108,8 @@ const extractQuote = selector => {
     const turnover = selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(1)").find(".Number").text().trim();
     const open = selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(2)").find(".Number").text().trim();
     const oneMonthLow = selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(3)").find(".Number").text().trim();
-    const shortSell = selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(4)").find(".date").text().trim() + 
-                        selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(4)").find(".Number").text().trim();
+    const shortSell = selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(4)").find(".date").text().trim() +
+        selector.find("#StkDetailMainBox").find("tr:eq(1) td:eq(4)").find(".Number").text().trim();
 
     console.log("nominal: " + nominal + ", change: " + change + ", high: " + high);
     return { code, tcName, nominal, change, changePct, high, low, transaction, turnover, prevClose, open, oneMonthHigh, oneMonthLow, marketCap, shortSell };
@@ -82,11 +123,11 @@ const getRelatedStockCode = selector => {
     for (i = 0; i < rowCount; i++) {
         for (j = -2; j < 2; j++) {
             if (j % 2 == 0) {
-                var code = selector.find("tr:eq(" + i +") a:eq(" + (j + 2) + ")").text().trim();
+                var code = selector.find("tr:eq(" + i + ") a:eq(" + (j + 2) + ")").text().trim();
                 if (code != null && code != "") {
                     relatedStockCode.push(code);
                 }
-            }   
+            }
         }
     }
 
@@ -94,7 +135,6 @@ const getRelatedStockCode = selector => {
 }
 
 const getStockDetail = selector => {
-    console.log("getStockDetail...");
     const bid = selector.find("li:eq(1)").text().trim();
     const sma10 = selector.find("li:eq(3)").text().trim();
     const ask = selector.find("li:eq(5)").text().trim();
@@ -117,8 +157,10 @@ const getStockDetail = selector => {
     const yield = selector.find("li:eq(41)").text().trim();
     const earningPerShare = selector.find("li:eq(45)").text().trim();
 
-    return { bid, ask, sma10, sma20, sma50, sma100, sma250, noOfTransaction, ccy, high52w, low52w,
-             boardLot, entryFee, rsi14, bidAskSpread, tenDayReturn, pe, yield, earningPerShare};
+    return {
+        bid, ask, sma10, sma20, sma50, sma100, sma250, noOfTransaction, ccy, high52w, low52w,
+        boardLot, entryFee, rsi14, bidAskSpread, tenDayReturn, pe, yield, earningPerShare
+    };
 }
 
 const extractTop20 = async (selector, version) => {
@@ -166,5 +208,6 @@ const extractTop20 = async (selector, version) => {
 module.exports = {
     singleQuote,
     multipleQuote,
-    top20Quote
+    top20Quote,
+    getLocalIndices
 }

@@ -68,9 +68,18 @@ const scraptEtnetNewsContent = async (newsId) => {
     return selector;
 }
 
+const scrapEtnetLocalIndices = async () => {
+    let etnetLocalIndices = 'https://www.etnet.com.hk/www/tc/stocks/indexes_main.php';
+    const html = await fetchHtml(etnetLocalIndices);
+    const selector = cheerio.load(html);
+    console.log("local indices url: " + etnetLocalIndices);
+    return selector;
+}
+
 module.exports = {
     scrapEtnetQuotePage,
     scrapEtnetTop20,
     scrapEtnetRelatedStockcodeNews,
-    scraptEtnetNewsContent
+    scraptEtnetNewsContent,
+    scrapEtnetLocalIndices
 };
