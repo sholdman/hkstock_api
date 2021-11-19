@@ -1,6 +1,6 @@
-# HK Stocke API
+# HK Stock API
 
-*** How to run this project: ***
+***How to run this project:***
 - Clone or download this repository;
 - Navigate to the project folder;
 - Once in project folder, run ```npm install```
