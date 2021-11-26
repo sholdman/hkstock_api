@@ -59,6 +59,18 @@ const scrapEtnetRelatedStockcodeNews = async (stockCode, page) => {
     return selector;
 }
 
+const scrapEtnetNews = async (category, page) => {
+    let etnetNewsUrl = 'http://www.etnet.com.hk/www/tc/news/categorized_news.php?category=' + category;
+
+    if (page > 0) {
+        etnetNewsUrl = etnetNewsUrl + "&page=" + page;
+    }
+    const html = await fetchHtml(etnetNewsUrl);
+    const selector = cheerio.load(html);
+    console.log("news url: " + etnetNewsUrl);
+    return selector;
+}
+
 const scraptEtnetNewsContent = async (newsId) => {
     let etnetNewsUrl = 'https://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_detail.php?newsid=' + newsId + '&code=' + 1;
 
@@ -81,5 +93,6 @@ module.exports = {
     scrapEtnetTop20,
     scrapEtnetRelatedStockcodeNews,
     scraptEtnetNewsContent,
-    scrapEtnetLocalIndices
+    scrapEtnetLocalIndices,
+    scrapEtnetNews
 };

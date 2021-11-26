@@ -38,7 +38,7 @@ router.get('/local_indices', async function (req, res) {
 
 // param 1. lang, 2. code
 // http://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_list.php?section=related&code=700
-// eg. http://127.0.0.1:3000/stock//news_list_related_code?code={code}
+// eg. http://127.0.0.1:3000/stock/news_list_related_code?code={code}
 router.get('/news_list_related_code', async function (req, res) {
     console.log('stockcode: ' + req.query.code);
     let code = req.query.code;
@@ -47,6 +47,16 @@ router.get('/news_list_related_code', async function (req, res) {
 });
 
 // TODO: sector news
+// Phase 1: all news
+// https://www.etnet.com.hk/www/tc/news/categorized_news.php?page=2&category=latest
+// eg. http://127.0.0.1:3000/stock//news_list?category={category}
+router.get('/news_list', async function (req, res) {
+    console.log('category: ' + req.query.category);
+    let category = req.query.category;
+    var result = await news.NewsListByCategory(category);
+    res.json(result);
+});
+
 
 // news content api
 // http://127.0.0.1:3000/stock/news_content?newsId={newsId}
@@ -55,8 +65,6 @@ router.get('/news_content', async function(req, res) {
     var result = await news.getNewsContent(newsId);
     res.json(result)
 })
-
-
 
 // local or world indices api
 
@@ -69,5 +77,7 @@ router.get('/test', async function (req, res) {
     res.json('total: ' + total);
 });
 
+// TODO:
+// TODO: reques from GET to POST
 
 module.exports = router;

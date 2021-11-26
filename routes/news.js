@@ -8,6 +8,13 @@ const getTotalRelatedNewsPage = async (stockCode) => {
     return pageCount;
 }
 
+const getTotalNewsPage = async (category) => {
+    var selector = await etnet_scraper.scrapEtnetNews(category, -1);
+    var pageCount = selector("body").find(".DivArticlePagination").find("a").length + 1;
+    console.log('pageCount: ' + pageCount);
+    return pageCount;
+}
+
 // get latest 100 news
 const relatedCodeNewsList = async (stockCode) => {
     var max = 100;
@@ -65,8 +72,50 @@ const getNewsContent = async (newsId) => {
     return news;
 }
 
+// get latest 100 news in category (default: all)
+const NewsListByCategory = async (category) => {
+    var max = 100;
+    var count = 0;
+    let news = {};
+    let result = [];
+
+    // get total number of news page
+    var pageCount = await getTotalNewsPage(category);
+
+    // loop etnet news page with param 'page'
+    for (page = 1; page <= pageCount; page++) {
+        var selector = await etnet_scraper.scrapEtnetNews(category, page);
+        var noOfNewsInPage = selector("body").find("#DivContent").find("div .DivArticleBox").find(".DivArticleList").length + 1;
+        console.log("noOfNewsInPage: " + noOfNewsInPage);
+
+        for (i = 0; i < noOfNewsInPage; i++) {
+            let newsId = String(selector("body").find("#DivContent").find("div .DivArticleBox")
+                            .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").attr('href'))
+                            .replace('categorized_news_detail.php?newsid=','');
+                newsId = newsId.substring(0, newsId.indexOf('&'));
+            let headline = selector("body").find("#DivContent").find("div .DivArticleBox")
+                            .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").text().trim();
+            let timestamp = selector("body").find("#DivContent").find("div .DivArticleBox")
+                            .find(".DivArticleList.dotLine:eq(" + i + ")").find(".date").text().trim();
+            if (newsId && headline && timestamp) {
+                result.push({ newsId, headline, timestamp });
+            }
+            count++;
+            if (count > max)
+                break;
+        }
+        if (count > max)
+            break;
+    }
+    
+    news["result"] = result;
+    news["timestamp"] = moment(new Date()).format('DD/MM/YYYY hh:mm');
+    return news;
+}
+
 module.exports = {
     relatedCodeNewsList,
     getTotalRelatedNewsPage,
-    getNewsContent
+    getNewsContent,
+    NewsListByCategory
 }
