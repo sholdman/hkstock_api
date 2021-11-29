@@ -59,11 +59,12 @@ Example
 ### News List Related Code
 - Request
 ```http
-GET /stock/news_list_related_code?code=700
+GET /stock/news_list_related_code?code=700&limit=10
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `code` | `string` | *code*: stock code|
+| `limit` | `string` | number of news <br>default: 100|
 
 - Response
 
