@@ -16,8 +16,8 @@ const getTotalNewsPage = async (category) => {
 }
 
 // get latest 100 news
-const relatedCodeNewsList = async (stockCode) => {
-    var max = 100;
+const relatedCodeNewsList = async (stockCode, limit) => {
+    var max = limit ? limit : 100;
     var count = 0;
     let news = {};
     let result = [];

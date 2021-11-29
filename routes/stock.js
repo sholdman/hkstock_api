@@ -36,13 +36,14 @@ router.get('/local_indices', async function (req, res) {
     res.json(result);
 });
 
-// param 1. lang, 2. code
+// param 1. lang, 2. code 3.limit
 // http://www.etnet.com.hk/www/tc/stocks/realtime/quote_news_list.php?section=related&code=700
-// eg. http://127.0.0.1:3000/stock/news_list_related_code?code={code}
+// eg. http://127.0.0.1:3000/stock/news_list_related_code?code={code}&limit={numberOfNews}
 router.get('/news_list_related_code', async function (req, res) {
-    console.log('stockcode: ' + req.query.code);
+    console.log('stockcode: ' + req.query.code + ', limit: ' + req.query.limit);
     let code = req.query.code;
-    var result = await news.relatedCodeNewsList(code);
+    let limit = req.query.limit;
+    var result = await news.relatedCodeNewsList(code, limit);
     res.json(result);
 });
 
