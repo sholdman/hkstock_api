@@ -72,12 +72,12 @@ const extractLocalIndices = selector => {
     for (i = 0; i < indexPosition.length; i++) {
 
         const nametc = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(0)").text().trim();
-        const nominal = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(1)").text().trim();
+        const nominal = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(1)").text().trim().replace(",", "");
         const change = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(2)").text().trim();
         const changePct = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(3)").text().trim();
-        const open = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(5)").text().trim();
-        const high = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(6)").text().trim();
-        const low = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(7)").text().trim();
+        const open = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(5)").text().trim().replace(",", "");
+        const high = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(6)").text().trim().replace(",", "");
+        const low = selector.find("tr:eq(" + indexPosition[i] + ") td:eq(7)").text().trim().replace(",", "");
         // indexconstituents: index constituents array with stock code
         data.push({ nametc, nominal, change, changePct, open, high, low });
 
