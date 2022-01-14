@@ -57,8 +57,8 @@ const relatedCodeNewsList = async (stockCode, limit) => {
     return news;
 }
 
-// default get etnet news
-const getNewsContent = async (newsId) => {
+// get etnet news content
+const getETNetNewsContent = async (newsId) => {
     var news = {};
 
     var selector = await etnet_scraper.scraptEtnetNewsContent(newsId);
@@ -74,13 +74,30 @@ const getNewsContent = async (newsId) => {
     return news;
 }
 
+// get aastock news content
+const getAAStockNewsContent = async (newsId) => {
+    var news = {};
+
+    var selector = await etnet_scraper.scrapAAStockNewsContent(newsId);
+    let headline = selector("body").find(".newshead5").text().trim();
+    let content = selector("body").find(".newscontent5").text().trim();
+    let timestamp = selector("body").find(".newstime5").text().trim();
+
+    news["newsId"] = newsId;
+    news["headline"] = headline;
+    news["content"] = content;
+    news["timestamp"] = moment(Date.parse(timestamp)).format('yyyyMMDDHHmm');
+    
+    return news;
+}
+
 const getNewsContentBySource = async (newsId, source) => {
     var news = {};
     
     if (source == "etnet") {
-        news = getNewsContent(newsId);
+        news = getETNetNewsContent(newsId);
     } else if (source = "aastock") {
-        // TODO: get news content from aastock
+        news = getAAStockNewsContent(newsId);
     }
     
     return news;
@@ -145,8 +162,9 @@ const getAANews = async () => {
 module.exports = {
     relatedCodeNewsList,
     getTotalRelatedNewsPage,
-    getNewsContent,
+    getETNetNewsContent,
     getNewsContentBySource,
     NewsListByCategory,
-    getAANews
+    getAANews,
+    getAAStockNewsContent
 }

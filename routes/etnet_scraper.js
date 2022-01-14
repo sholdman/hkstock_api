@@ -80,6 +80,15 @@ const scraptEtnetNewsContent = async (newsId) => {
     return selector;
 }
 
+const scrapAAStockNewsContent = async (newsId) => {
+    let aastockNewsUrl = 'http://www.aastocks.com/tc/stocks/news/aafn-con/' + newsId;
+
+    const html = await fetchHtml(aastockNewsUrl);
+    const selector = cheerio.load(html);
+    console.log("news content url: " + aastockNewsUrl);
+    return selector;
+}
+
 const scrapEtnetLocalIndices = async () => {
     let etnetLocalIndices = 'https://www.etnet.com.hk/www/tc/stocks/indexes_main.php';
     const html = await fetchHtml(etnetLocalIndices);
@@ -93,6 +102,7 @@ module.exports = {
     scrapEtnetTop20,
     scrapEtnetRelatedStockcodeNews,
     scraptEtnetNewsContent,
+    scrapAAStockNewsContent,
     scrapEtnetLocalIndices,
     scrapEtnetNews
 };
