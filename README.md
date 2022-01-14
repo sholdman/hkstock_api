@@ -75,11 +75,12 @@ Example
 ### ETNet News Content
 - Request
 ```http
-GET /stock/news_content?newsId=ETN311116302
+GET /stock/news_content?newsId=ETN311116302&source=etnet
 ```
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `newsId` | `string` | ETNet's news ID|
+| `source` | `string` | News source: {etnet|aastock} <br>default: etnet|
 
 - Response
 
