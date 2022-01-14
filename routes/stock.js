@@ -55,6 +55,9 @@ router.get('/news_list', async function (req, res) {
     console.log('category: ' + req.query.category);
     let category = req.query.category;
     var result = await news.NewsListByCategory(category);
+    var result_aastock = await news.getAANews();
+
+    result["result"] = result["result"].concat(result_aastock);
     res.json(result);
 });
 
@@ -63,7 +66,14 @@ router.get('/news_list', async function (req, res) {
 // http://127.0.0.1:3000/stock/news_content?newsId={newsId}
 router.get('/news_content', async function(req, res) {
     let newsId = req.query.newsId;
-    var result = await news.getNewsContent(newsId);
+    let source = req.query.source ? req.query.source : "etnet";
+    var result;
+    
+    if (!source) {
+        result = await news.getNewsContent(newsId);
+    } else {
+        result = await news.getNewsContentBySource(newsId, source);
+    }
     res.json(result)
 })
 

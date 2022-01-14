@@ -1,5 +1,6 @@
 var etnet_scraper = require('./etnet_scraper');
 var moment = require('moment');
+var api_helper = require('./util/api_helper');
 
 const getTotalRelatedNewsPage = async (stockCode) => {
     var selector = await etnet_scraper.scrapEtnetRelatedStockcodeNews(stockCode, -1);
@@ -56,6 +57,7 @@ const relatedCodeNewsList = async (stockCode, limit) => {
     return news;
 }
 
+// default get etnet news
 const getNewsContent = async (newsId) => {
     var news = {};
 
@@ -68,6 +70,18 @@ const getNewsContent = async (newsId) => {
     news["headline"] = headline;
     news["content"] = content;
     news["timestamp"] = moment(new Date()).format('yyyyMMDDHHmm');
+    
+    return news;
+}
+
+const getNewsContentBySource = async (newsId, source) => {
+    var news = {};
+    
+    if (source == "etnet") {
+        news = getNewsContent(newsId);
+    } else if (source = "aastock") {
+        // TODO: get news content from aastock
+    }
     
     return news;
 }
@@ -113,9 +127,26 @@ const NewsListByCategory = async (category) => {
     return news;
 }
 
+const getAANews = async () => {
+    let result = [];
+    var jsonString = await api_helper.getAAStockNews();
+    var newsList = jsonString["Data"];
+    
+    newsList.forEach(news => {
+        var newsId = news["NewsID"];
+        var title = news["Title"];
+        var timestamp = news["NewsTime"];
+        result.push({ newsId, title, timestamp });
+    });
+
+    return result;
+}
+
 module.exports = {
     relatedCodeNewsList,
     getTotalRelatedNewsPage,
     getNewsContent,
-    NewsListByCategory
+    getNewsContentBySource,
+    NewsListByCategory,
+    getAANews
 }
