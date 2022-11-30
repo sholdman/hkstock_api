@@ -6,6 +6,12 @@ const getAAStockNews = async() => {
     return axios.get(url).then(response => response.data);
 }
 
+const quoteSearch = async(code, timestamp) => {
+    var url = 'http://fctdata.aastocks.com/g2ce/Quote/getQuote?format=text&u=13&t='+timestamp+'&d=07DD98FB&grp0=AAPL.US%7C127&grp1=AAPL.US%7C3%2C-1%2C28'
+    return axios.get(url).then(response => response.data);
+}
+
 module.exports = {
-    getAAStockNews
+    getAAStockNews,
+    quoteSearch
 }

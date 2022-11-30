@@ -110,38 +110,42 @@ const NewsListByCategory = async (category) => {
     let news = {};
     let result = [];
 
-    // get total number of news page
-    var pageCount = await getTotalNewsPage(category);
+    try {
+        // get total number of news page
+        var pageCount = await getTotalNewsPage(category);
 
-    // loop etnet news page with param 'page'
-    for (page = 1; page <= pageCount; page++) {
-        var selector = await etnet_scraper.scrapEtnetNews(category, page);
-        var noOfNewsInPage = selector("body").find("#DivContent").find("div .DivArticleBox").find(".DivArticleList").length + 1;
-        console.log("noOfNewsInPage: " + noOfNewsInPage);
+        // loop etnet news page with param 'page'
+        for (page = 1; page <= pageCount; page++) {
+            var selector = await etnet_scraper.scrapEtnetNews(category, page);
+            var noOfNewsInPage = selector("body").find("#DivContent").find("div .DivArticleBox").find(".DivArticleList").length + 1;
+            console.log("noOfNewsInPage: " + noOfNewsInPage);
 
-        for (i = 0; i < noOfNewsInPage; i++) {
-            let newsId = String(selector("body").find("#DivContent").find("div .DivArticleBox")
-                            .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").attr('href'))
-                            .replace('categorized_news_detail.php?newsid=','');
-                newsId = newsId.substring(0, newsId.indexOf('&'));
-            let headline = selector("body").find("#DivContent").find("div .DivArticleBox")
-                            .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").text().trim();
-            let timestamp = selector("body").find("#DivContent").find("div .DivArticleBox")
-                            .find(".DivArticleList.dotLine:eq(" + i + ")").find(".date").text().trim();
-            if (newsId && headline && timestamp) {
-                result.push({ newsId, headline, timestamp });
+            for (i = 0; i < noOfNewsInPage; i++) {
+                let newsId = String(selector("body").find("#DivContent").find("div .DivArticleBox")
+                                .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").attr('href'))
+                                .replace('categorized_news_detail.php?newsid=','');
+                    newsId = newsId.substring(0, newsId.indexOf('&'));
+                let headline = selector("body").find("#DivContent").find("div .DivArticleBox")
+                                .find(".DivArticleList.dotLine:eq(" + i + ")").find("a").text().trim();
+                let timestamp = selector("body").find("#DivContent").find("div .DivArticleBox")
+                                .find(".DivArticleList.dotLine:eq(" + i + ")").find(".date").text().trim();
+                if (newsId && headline && timestamp) {
+                    result.push({ newsId, headline, timestamp });
+                }
+                count++;
+                if (count > max)
+                    break;
             }
-            count++;
             if (count > max)
                 break;
         }
-        if (count > max)
-            break;
+        
+        news["result"] = result;
+        news["timestamp"] = moment(new Date()).format('DD/MM/YYYY hh:mm');
+        return news;
+    } catch (error) {
+        console.error(error);
     }
-    
-    news["result"] = result;
-    news["timestamp"] = moment(new Date()).format('DD/MM/YYYY hh:mm');
-    return news;
 }
 
 const getAANews = async () => {

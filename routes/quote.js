@@ -7,26 +7,33 @@ const singleQuote = async (stockCode) => {
     // const selector = cheerio.load(html);
 
     // console.log("etnetUrl: " + etnetUrl);
-    var selector = await etnet_scraper.scrapEtnetQuotePage(stockCode);
+    
 
-    // for common class
-    const searchResults = selector("body").find("#UnderSkinnerDiv");
-    var quote = extractQuote(searchResults);
+    try {
+        var selector = await etnet_scraper.scrapEtnetQuotePage(stockCode);
 
-    // for stock detail
-    const stockDetailSelector = selector("body").find("div #StkDetailColB > #StkList");
-    var stockDetail = getStockDetail(stockDetailSelector);
+        // for common class
+        const searchResults = selector("body").find("#UnderSkinnerDiv");
+        var quote = extractQuote(searchResults);
 
-    // for related stockcode
-    const relatedStockCodeSelector = selector("body").find("div #DivContentRight > div:eq(8)");
-    var relatedStockCode = getRelatedStockCode(relatedStockCodeSelector);
+        // for stock detail
+        const stockDetailSelector = selector("body").find("div #StkDetailColB > #StkList");
+        var stockDetail = getStockDetail(stockDetailSelector);
 
-    quote = Object.assign({}, quote, stockDetail);
+        // for related stockcode
+        const relatedStockCodeSelector = selector("body").find("div #DivContentRight > div:eq(8)");
+        var relatedStockCode = getRelatedStockCode(relatedStockCodeSelector);
 
-    // TODO: formatter class
-    quote["relatedStockCode"] = relatedStockCode;
+        quote = Object.assign({}, quote, stockDetail);
 
-    return quote;
+        // TODO: formatter class
+        quote["relatedStockCode"] = relatedStockCode;
+
+        return quote;
+    } catch (error) {
+        console.log(error);
+        return { "error" : "Invalid stock code or error in parsing"};
+    }
 }
 
 const multipleQuote = async (codeList) => {
@@ -42,13 +49,22 @@ const multipleQuote = async (codeList) => {
 }
 
 const top20Quote = async (mainType, subType, version) => {
-    var selector = await etnet_scraper.scrapEtnetTop20(mainType, subType);
+    
+    if (mainType == undefined || subType == undefined) {
+        return {"error" : "mainType and subType cannot be null"};
+    }
 
-    // for common class
-    const top20Content = selector("body").find("div #DivContent").find(".DivFigureContent");
-    var quotes = extractTop20(top20Content, version);
+    try {
+        var selector = await etnet_scraper.scrapEtnetTop20(mainType, subType);
 
-    return quotes;
+        // for common class
+        const top20Content = selector("body").find("div #DivContent").find(".DivFigureContent");
+        var quotes = extractTop20(top20Content, version);
+
+        return quotes;
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 const getLocalIndices = async () => {
