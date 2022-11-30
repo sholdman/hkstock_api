@@ -1,5 +1,6 @@
 var express = require('express');
 const quote = require('./quote');
+const quote_us = require('./quote_us');
 const news = require('./news');
 var router = express.Router();
 
@@ -8,12 +9,23 @@ var router = express.Router();
 // eg. http://127.0.0.1:3000/stock/quote?code={code,code,code}
 router.get('/quote', async function (req, res) {
     codeList = req.query.code.split(",");
+    market = req.query.market;
     var result;
-    if (req.query.code && codeList.length == 1) { // check if stockcode is empty
-        result = await quote.singleQuote(codeList[0]);
-    } else {
-        console.log('codeList: ' + codeList);
-        result = await quote.multipleQuote(codeList);
+
+    switch(market) {
+        case 'US':
+            console.log("Quote US");
+            quote_us.singleQuote(codeList[0]);
+            break;
+        default:
+            console.log("Quote HK");
+            if (req.query.code && codeList.length == 1) { // check if stockcode is empty
+                result = await quote.singleQuote(codeList[0]);
+            } else {
+                console.log('codeList: ' + codeList);
+                result = await quote.multipleQuote(codeList);
+            }
+            break;
     }
     res.json(result);
 });
@@ -55,9 +67,9 @@ router.get('/news_list', async function (req, res) {
     console.log('category: ' + req.query.category);
     let category = req.query.category;
     var result = await news.NewsListByCategory(category);
-    var result_aastock = await news.getAANews();
+    // var result_aastock = await news.getAANews();
 
-    result["result"] = result["result"].concat(result_aastock);
+    // result["result"] = result["result"].concat(result_aastock);
     res.json(result);
 });
 
