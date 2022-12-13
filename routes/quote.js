@@ -69,14 +69,19 @@ const top20Quote = async (mainType, subType, version) => {
 
 const getLocalIndices = async () => {
     var indices = {};
-    var selector = await etnet_scraper.scrapEtnetLocalIndices();
-    var indicesContent = selector("body").find(".DivFigureContent").find("tbody");
-    var data = extractLocalIndices(indicesContent);
 
-    indices["data"] = data;
-    indices["timestamp"] = moment(new Date()).format('yyyyMMDDHHmm');
+    try {
+        var selector = await etnet_scraper.scrapEtnetLocalIndices();
+        var indicesContent = selector("body").find(".DivFigureContent").find("tbody");
+        var data = extractLocalIndices(indicesContent);
 
-    return indices;
+        indices["data"] = data;
+        indices["timestamp"] = moment(new Date()).format('yyyyMMDDHHmm');
+
+        return indices;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const extractLocalIndices = selector => {
